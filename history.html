@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运动历史 - 我的减肥记录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+
+        .stats-overview {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ECC71;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            background: white;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            border-color: #2ECC71;
+            background: #2ECC71;
+            color: white;
+        }
+
+        .filter-btn:hover {
+            border-color: #2ECC71;
+            color: #2ECC71;
+        }
+
+        .filter-btn.active:hover {
+            color: white;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .workout-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .workout-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .workout-type {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .workout-icon {
+            font-size: 20px;
+        }
+
+        .workout-date {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .workout-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .workout-stat {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .workout-stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ECC71;
+            margin-bottom: 3px;
+        }
+
+        .workout-stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .empty-description {
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: #2ECC71;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #2ECC71;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workout-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filter-buttons {
+                justify-content: flex-start;
+            }
+
+            .back-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页头 -->
+        <div class="header">
+            <h1>运动历史</h1>
+            <p>追踪你的减肥进程</p>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-overview">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalWorkouts">0</div>
+                    <div class="stat-label">总运动次数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCalories">0</div>
+                    <div class="stat-label">总消耗卡路里</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalTime">0</div>
+                    <div class="stat-label">总运动时间（分钟）</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 筛选器 -->
+        <div class="filter-section">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all" onclick="filterWorkouts('all')">全部</button>
+                <button class="filter-btn" data-filter="快走" onclick="filterWorkouts('快走')">快走</button>
+                <button class="filter-btn" data-filter="慢跑" onclick="filterWorkouts('慢跑')">慢跑</button>
+                <button class="filter-btn" data-filter="游泳" onclick="filterWorkouts('游泳')">游泳</button>
+                <button class="filter-btn" data-filter="跳绳" onclick="filterWorkouts('跳绳')">跳绳</button>
+                <button class="filter-btn" data-filter="力量训练" onclick="filterWorkouts('力量训练')">力量训练</button>
+            </div>
+        </div>
+
+        <!-- 历史记录列表 -->
+        <div class="history-list" id="historyList">
+            <!-- 动态生成的运动记录 -->
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📈</div>
+            <div class="empty-title">还没有运动记录</div>
+            <div class="empty-description">开始你的第一次运动，记录你的减肥旅程</div>
+            <button class="action-btn" onclick="goToExercise()">开始运动</button>
+        </div>
+    </div>
+
+    <!-- 返回按钮 -->
+    <button class="back-btn" onclick="goBack()" title="返回">←</button>
+
+    <script>
+        let workoutHistory = [];
+        let filteredHistory = [];
+        let currentFilter = 'all';
+
+        // 运动类型图标映射
+        const exerciseIcons = {
+            '快走': '🚶',
+            '慢跑': '🏃',
+            '游泳': '🏊',
+            '跳绳': '🤸',
+            '徒手深蹲': '🏋️',
+            '俯卧撑': '💪',
+            '瑜伽': '🧘'
+        };
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWorkoutHistory();
+            updateStatistics();
+            displayWorkouts();
+        });
+
+        // 加载运动历史
+        function loadWorkoutHistory() {
+            workoutHistory = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+            filteredHistory = [...workoutHistory];
+        }
+
+        // 更新统计数据
+        function updateStatistics() {
+            const totalWorkouts = workoutHistory.length;
+            const totalCalories = workoutHistory.reduce((sum, workout) => sum + workout.calories, 0);
+            const totalTime = Math.round(workoutHistory.reduce((sum, workout) => sum + (workout.duration / (1000 * 60)), 0));
+
+            document.getElementById('totalWorkouts').textContent = totalWorkouts;
+            document.getElementById('totalCalories').textContent = totalCalories;
+            document.getElementById('totalTime').textContent = totalTime;
+        }
+
+        // 筛选运动记录
+        function filterWorkouts(filterType) {
+            currentFilter = filterType;
+
+            // 更新筛选按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filterType) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // 筛选数据
+            if (filterType === 'all') {
+                filteredHistory = [...workoutHistory];
+            } else if (filterType === '力量训练') {
+                filteredHistory = workoutHistory.filter(workout =>
+                    ['徒手深蹲', '俯卧撑'].includes(workout.type)
+                );
+            } else {
+                filteredHistory = workoutHistory.filter(workout => workout.type === filterType);
+            }
+
+            displayWorkouts();
+        }
+
+        // 显示运动记录
+        function displayWorkouts() {
+            const historyList = document.getElementById('historyList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredHistory.length === 0) {
+                historyList.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            historyList.style.display = 'flex';
+            emptyState.style.display = 'none';
+
+            // 按日期排序（最新的在前）
+            const sortedHistory = [...filteredHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            historyList.innerHTML = '';
+
+            sortedHistory.forEach(workout => {
+                const workoutCard = createWorkoutCard(workout);
+                historyList.appendChild(workoutCard);
+            });
+        }
+
+        // 创建运动记录卡片
+        function createWorkoutCard(workout) {
+            const card = document.createElement('div');
+            card.className = 'workout-card';
+
+            const date = new Date(workout.date);
+            const dateString = `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+            const duration = Math.round(workout.duration / (1000 * 60)); // 转换为分钟
+            const steps = workout.steps || 0;
+            const calories = workout.calories || 0;
+            const avgHeartRate = workout.avgHeartRate || '--';
+
+            card.innerHTML = `
+                <div class="workout-header">
+                    <div class="workout-type">
+                        <span class="workout-icon">${exerciseIcons[workout.type] || '💪'}</span>
+                        ${workout.type}
+                    </div>
+                    <div class="workout-date">${dateString}</div>
+                </div>
+                <div class="workout-stats">
+                    <div class="workout-stat">
+                        <div class="workout-stat-value">${duration}</div>
+                        <div class="workout-stat-label">分钟</div>
+                    </div>
+                    <div class="workout-stat">
+                        <div class="workout-stat-value">${steps}</div>
+                        <div class="workout-stat-label">步数</div>
+                    </div>
+                    <div class="workout-stat">
+                        <div class="workout-stat-value">${calories}</div>
+                        <div class="workout-stat-label">卡路里</div>
+                    </div>
+                    <div class="workout-stat">
+                        <div class="workout-stat-value">${avgHeartRate}</div>
+                        <div class="workout-stat-label">心率</div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // 跳转到运动推荐页面
+        function goToExercise() {
+            window.location.href = 'exercise.html';
+        }
+
+        // 返回上一页
+        function goBack() {
+            window.location.href = 'exercise.html';
+        }
+
+        // 添加一些示例数据（用于演示）
+        function addSampleData() {
+            if (workoutHistory.length === 0) {
+                const sampleWorkouts = [
+                    {
+                        date: new Date(Date.now() - 86400000).toISOString(), // 昨天
+                        type: '快走',
+                        duration: 1800000, // 30分钟
+                        steps: 3500,
+                        calories: 150,
+                        avgHeartRate: 120
+                    },
+                    {
+                        date: new Date(Date.now() - 172800000).toISOString(), // 前天
+                        type: '慢跑',
+                        duration: 1500000, // 25分钟
+                        steps: 2800,
+                        calories: 250,
+                        avgHeartRate: 140
+                    },
+                    {
+                        date: new Date(Date.now() - 259200000).toISOString(), // 3天前
+                        type: '徒手深蹲',
+                        duration: 900000, // 15分钟
+                        steps: 200,
+                        calories: 80,
+                        avgHeartRate: 110
+                    }
+                ];
+
+                localStorage.setItem('workoutHistory', JSON.stringify(sampleWorkouts));
+                loadWorkoutHistory();
+                updateStatistics();
+                displayWorkouts();
+            }
+        }
+
+        // 如果没有数据，添加示例数据
+        if (workoutHistory.length === 0) {
+            // 可以取消注释下面的行来添加示例数据
+            // addSampleData();
+        }
+    </script>
+</body>
+</html>

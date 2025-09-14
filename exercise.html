@@ -13,16 +13,142 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
             color: #333;
             line-height: 1.6;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 背景容器 */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* 主渐变背景 */
+        .gradient-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                #667eea 0%,
+                #764ba2 25%,
+                #2ECC71 50%,
+                #56ab2f 75%,
+                #a8edea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 浮动装饰元素 */
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 25s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            width: 60px;
+            height: 60px;
+            left: 5%;
+            top: 15%;
+            animation-delay: 0s;
+            background: rgba(46, 204, 113, 0.15);
+        }
+
+        .shape:nth-child(2) {
+            width: 90px;
+            height: 90px;
+            right: 10%;
+            top: 8%;
+            animation-delay: -8s;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .shape:nth-child(3) {
+            width: 45px;
+            height: 45px;
+            left: 75%;
+            top: 55%;
+            animation-delay: -15s;
+            background: rgba(102, 126, 234, 0.18);
+        }
+
+        .shape:nth-child(4) {
+            width: 75px;
+            height: 75px;
+            left: 15%;
+            bottom: 25%;
+            animation-delay: -22s;
+            background: rgba(168, 237, 234, 0.2);
+        }
+
+        .shape:nth-child(5) {
+            width: 35px;
+            height: 35px;
+            right: 30%;
+            bottom: 35%;
+            animation-delay: -12s;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .shape:nth-child(6) {
+            width: 55px;
+            height: 55px;
+            left: 50%;
+            top: 30%;
+            animation-delay: -18s;
+            background: rgba(46, 204, 113, 0.12);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.6;
+            }
+            33% {
+                transform: translateY(-20px) rotate(120deg);
+                opacity: 1;
+            }
+            66% {
+                transform: translateY(-40px) rotate(240deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(0px) rotate(360deg);
+                opacity: 0.6;
+            }
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 30px 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
@@ -31,29 +157,51 @@
         }
 
         .header h1 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
         }
 
         .header p {
             font-size: 18px;
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
         .user-info {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow:
+                0 8px 32px rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .user-info h2 {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 15px;
+            font-size: 22px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 600;
         }
 
         .info-grid {
@@ -76,7 +224,8 @@
         .info-value {
             font-size: 18px;
             font-weight: 600;
-            color: #2c3e50;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
         .daily-intake {
@@ -102,28 +251,47 @@
         }
 
         .recommendations h2 {
-            font-size: 24px;
-            color: #2c3e50;
-            margin-bottom: 20px;
+            font-size: 26px;
+            color: white;
+            margin-bottom: 25px;
             text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
         }
 
         .exercise-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow:
+                0 8px 32px rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-left: 5px solid #2ECC71;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 12px 40px rgba(31, 38, 135, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .exercise-card h3 {
-            font-size: 22px;
-            color: #2c3e50;
-            margin-bottom: 15px;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            font-weight: 600;
         }
 
         .exercise-icon {
@@ -166,27 +334,31 @@
 
         .exercise-description {
             font-size: 16px;
-            color: #666;
+            color: rgba(255, 255, 255, 0.9);
             line-height: 1.6;
             margin-bottom: 15px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
         .exercise-benefits {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .benefits-title {
             font-size: 16px;
             font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
 
         .benefits-list {
             font-size: 14px;
-            color: #666;
+            color: rgba(255, 255, 255, 0.9);
             list-style: none;
         }
 
@@ -229,13 +401,17 @@
         }
 
         .action-buttons {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-top: 30px;
         }
 
+        .action-buttons .btn:last-child {
+            grid-column: span 2;
+        }
+
         .btn {
-            flex: 1;
             padding: 18px;
             font-size: 18px;
             font-weight: 600;
@@ -246,37 +422,74 @@
         }
 
         .btn-primary {
-            background: #2ECC71;
+            background: linear-gradient(135deg, #2ECC71, #27ae60);
             color: white;
+            box-shadow:
+                0 4px 15px rgba(46, 204, 113, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
         }
 
         .btn-primary:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, #27ae60, #2ECC71);
+            transform: translateY(-3px);
+            box-shadow:
+                0 8px 25px rgba(46, 204, 113, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         .btn-secondary {
-            background: #e9ecef;
-            color: #495057;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
 
         .btn-secondary:hover {
-            background: #dee2e6;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
         }
 
         .progress-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
             margin-top: 30px;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow:
+                0 8px 32px rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: slideInUp 0.8s ease-out;
         }
 
         .progress-section h3 {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 15px;
+            font-size: 22px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-weight: 600;
         }
 
         .progress-stats {
@@ -304,6 +517,29 @@
             color: #7f8c8d;
         }
 
+        .start-exercise-btn {
+            background: #2ECC71;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .start-exercise-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .start-exercise-btn:active {
+            transform: translateY(0);
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px 15px;
@@ -321,10 +557,28 @@
             .action-buttons {
                 flex-direction: column;
             }
+
+            .start-exercise-btn {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 背景容器 -->
+    <div class="background-container">
+        <div class="gradient-background"></div>
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>你的专属运动计划</h1>
@@ -386,6 +640,7 @@
         <!-- 操作按钮 -->
         <div class="action-buttons">
             <button class="btn btn-secondary" onclick="goBack()">返回修改信息</button>
+            <button class="btn btn-secondary" onclick="viewHistory()">查看运动历史</button>
             <button class="btn btn-primary" onclick="startPlan()">开始我的计划</button>
         </div>
     </div>
@@ -597,6 +852,11 @@
                             ${exercise.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
                         </ul>
                     </div>
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="start-exercise-btn" onclick="startExercise('${exercise.name}')">
+                            开始 ${exercise.name}
+                        </button>
+                    </div>
                 `;
                 container.appendChild(exerciseCard);
             });
@@ -615,6 +875,17 @@
         // 返回修改信息
         function goBack() {
             window.location.href = 'index.html';
+        }
+
+        // 查看运动历史
+        function viewHistory() {
+            window.location.href = 'history.html';
+        }
+
+        // 开始特定运动
+        function startExercise(exerciseName) {
+            // 跳转到运动追踪页面，传递运动类型参数
+            window.location.href = `workout.html?exercise=${encodeURIComponent(exerciseName)}`;
         }
 
         // 开始计划（这里应该跳转到今日卡片页面）

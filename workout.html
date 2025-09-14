@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运动追踪 - 实时记录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .workout-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .workout-type {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .timer-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2ECC71;
+            margin-bottom: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-status {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .btn-start {
+            background: #2ECC71;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: #27ae60;
+        }
+
+        .btn-pause {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-pause:hover {
+            background: #e67e22;
+        }
+
+        .btn-stop {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-stop:hover {
+            background: #c0392b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ECC71;
+            margin-bottom: 5px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .heart-rate-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .heart-rate-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .heart-icon {
+            font-size: 32px;
+            color: #e74c3c;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heart-rate-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #e74c3c;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .heart-rate-unit {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-left: 5px;
+        }
+
+        .heart-rate-zone {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .zone-fat-burn {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .zone-cardio {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .zone-peak {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .progress-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .progress-label {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2ECC71;
+            transition: width 0.3s ease;
+        }
+
+        .progress-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2ECC71;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .action-buttons {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .btn-primary {
+            background: #2ECC71;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #27ae60;
+        }
+
+        .sensor-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-connected {
+            background: #2ECC71;
+        }
+
+        .status-disconnected {
+            background: #e74c3c;
+        }
+
+        @media (max-width: 600px) {
+            .workout-container {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timer-display {
+                font-size: 36px;
+            }
+
+            .heart-rate-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workout-container">
+        <!-- 传感器状态指示器 -->
+        <div class="sensor-status" id="sensorStatus">
+            <span class="status-indicator status-disconnected" id="statusIndicator"></span>
+            <span id="statusText">传感器未连接</span>
+        </div>
+
+        <!-- 头部信息 -->
+        <div class="header">
+            <h1>运动追踪</h1>
+            <div class="workout-type" id="workoutType">快走</div>
+        </div>
+
+        <!-- 计时器区域 -->
+        <div class="timer-section">
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="timer-status" id="timerStatus">准备开始</div>
+            <div class="control-buttons">
+                <button class="control-btn btn-start" id="startBtn" onclick="startWorkout()">开始</button>
+                <button class="control-btn btn-pause" id="pauseBtn" onclick="pauseWorkout()" style="display: none;">暂停</button>
+                <button class="control-btn btn-stop" id="stopBtn" onclick="stopWorkout()" style="display: none;">结束</button>
+            </div>
+        </div>
+
+        <!-- 心率监测 -->
+        <div class="heart-rate-card">
+            <div class="heart-rate-display">
+                <span class="heart-icon">💓</span>
+                <span class="heart-rate-value" id="heartRate">--</span>
+                <span class="heart-rate-unit">BPM</span>
+            </div>
+            <div class="heart-rate-zone zone-fat-burn" id="heartRateZone">待检测</div>
+        </div>
+
+        <!-- 统计数据 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🚶</div>
+                <div class="stat-value" id="stepCount">0</div>
+                <div class="stat-label">步数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value" id="caloriesBurned">0</div>
+                <div class="stat-label">卡路里</div>
+            </div>
+        </div>
+
+        <!-- 进度指标 -->
+        <div class="progress-section">
+            <div class="progress-item">
+                <span class="progress-label">目标时间</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="timeProgress" style="width: 0%"></div>
+                </div>
+                <span class="progress-value" id="timeProgressText">0%</span>
+            </div>
+            <div class="progress-item">
+                <span class="progress-label">目标热量</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="calorieProgress" style="width: 0%"></div>
+                </div>
+                <span class="progress-value" id="calorieProgressText">0%</span>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="action-btn btn-secondary" onclick="goBack()">返回</button>
+            <button class="action-btn btn-primary" onclick="saveWorkout()" id="saveBtn" style="display: none;">保存记录</button>
+        </div>
+    </div>
+
+    <script>
+        // 运动状态管理
+        let workoutState = {
+            isActive: false,
+            isPaused: false,
+            startTime: null,
+            pausedTime: 0,
+            elapsedTime: 0,
+            heartRate: 0,
+            stepCount: 0,
+            initialSteps: 0,
+            caloriesBurned: 0,
+            targetDuration: 30 * 60, // 30分钟（秒）
+            targetCalories: 200,
+            workoutType: '快走'
+        };
+
+        // 定时器
+        let workoutTimer = null;
+        let heartRateTimer = null;
+        let stepCountTimer = null;
+
+        // 用户数据
+        let userData = {};
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取传递的运动类型和用户数据
+            const urlParams = new URLSearchParams(window.location.search);
+            const exerciseType = urlParams.get('exercise') || '快走';
+            workoutState.workoutType = exerciseType;
+            document.getElementById('workoutType').textContent = exerciseType;
+
+            // 获取用户数据
+            userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+            // 根据运动类型设置目标
+            setExerciseTargets(exerciseType);
+
+            // 请求传感器权限
+            requestSensorPermissions();
+
+            // 模拟传感器数据（用于演示）
+            startSensorSimulation();
+        });
+
+        // 设置运动目标
+        function setExerciseTargets(exerciseType) {
+            const targets = {
+                '快走': { duration: 30 * 60, calories: 150 },
+                '慢跑': { duration: 25 * 60, calories: 250 },
+                '游泳': { duration: 40 * 60, calories: 300 },
+                '跳绳': { duration: 15 * 60, calories: 200 },
+                '徒手深蹲': { duration: 15 * 60, calories: 80 },
+                '俯卧撑': { duration: 12 * 60, calories: 70 },
+                '瑜伽': { duration: 30 * 60, calories: 120 }
+            };
+
+            const target = targets[exerciseType] || targets['快走'];
+            workoutState.targetDuration = target.duration;
+            workoutState.targetCalories = target.calories;
+        }
+
+        // 请求传感器权限
+        async function requestSensorPermissions() {
+            try {
+                // 检查设备运动传感器支持
+                if ('DeviceMotionEvent' in window) {
+                    // 对于iOS 13+，需要请求权限
+                    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                        const permission = await DeviceMotionEvent.requestPermission();
+                        if (permission === 'granted') {
+                            enableSensors();
+                        }
+                    } else {
+                        enableSensors();
+                    }
+                }
+
+                // 检查心率传感器（Web Bluetooth）
+                if ('bluetooth' in navigator) {
+                    updateSensorStatus(true, '传感器已连接');
+                } else {
+                    updateSensorStatus(false, '传感器未连接');
+                }
+            } catch (error) {
+                console.error('传感器权限请求失败:', error);
+                updateSensorStatus(false, '传感器权限被拒绝');
+            }
+        }
+
+        // 启用传感器
+        function enableSensors() {
+            // 监听设备运动（用于步数计算）
+            if (window.DeviceMotionEvent) {
+                window.addEventListener('devicemotion', handleDeviceMotion);
+            }
+
+            updateSensorStatus(true, '传感器已连接');
+        }
+
+        // 处理设备运动数据
+        function handleDeviceMotion(event) {
+            if (!workoutState.isActive) return;
+
+            const acceleration = event.acceleration;
+            if (acceleration) {
+                // 简化的步数检测算法
+                const magnitude = Math.sqrt(
+                    acceleration.x * acceleration.x +
+                    acceleration.y * acceleration.y +
+                    acceleration.z * acceleration.z
+                );
+
+                // 检测步伐（简化版本）
+                if (magnitude > 2.5) {
+                    workoutState.stepCount++;
+                    updateDisplay();
+                }
+            }
+        }
+
+        // 开始运动
+        function startWorkout() {
+            if (!workoutState.isActive) {
+                workoutState.isActive = true;
+                workoutState.isPaused = false;
+                workoutState.startTime = Date.now() - workoutState.pausedTime;
+                workoutState.initialSteps = workoutState.stepCount;
+
+                // 更新UI
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('pauseBtn').style.display = 'inline-block';
+                document.getElementById('stopBtn').style.display = 'inline-block';
+                document.getElementById('timerStatus').textContent = '运动中';
+
+                // 启动定时器
+                startTimers();
+            }
+        }
+
+        // 暂停运动
+        function pauseWorkout() {
+            if (workoutState.isActive && !workoutState.isPaused) {
+                workoutState.isPaused = true;
+                workoutState.pausedTime = Date.now() - workoutState.startTime;
+
+                // 更新UI
+                document.getElementById('pauseBtn').textContent = '继续';
+                document.getElementById('pauseBtn').onclick = resumeWorkout;
+                document.getElementById('timerStatus').textContent = '已暂停';
+
+                // 停止定时器
+                stopTimers();
+            }
+        }
+
+        // 继续运动
+        function resumeWorkout() {
+            if (workoutState.isActive && workoutState.isPaused) {
+                workoutState.isPaused = false;
+                workoutState.startTime = Date.now() - workoutState.pausedTime;
+
+                // 更新UI
+                document.getElementById('pauseBtn').textContent = '暂停';
+                document.getElementById('pauseBtn').onclick = pauseWorkout;
+                document.getElementById('timerStatus').textContent = '运动中';
+
+                // 重启定时器
+                startTimers();
+            }
+        }
+
+        // 结束运动
+        function stopWorkout() {
+            workoutState.isActive = false;
+            workoutState.isPaused = false;
+
+            // 更新UI
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('startBtn').textContent = '重新开始';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'inline-block';
+            document.getElementById('timerStatus').textContent = '运动已结束';
+
+            // 停止定时器
+            stopTimers();
+
+            // 显示运动总结
+            showWorkoutSummary();
+        }
+
+        // 启动定时器
+        function startTimers() {
+            workoutTimer = setInterval(updateTimer, 1000);
+            heartRateTimer = setInterval(updateHeartRate, 2000);
+            stepCountTimer = setInterval(updateStepCount, 500);
+        }
+
+        // 停止定时器
+        function stopTimers() {
+            if (workoutTimer) {
+                clearInterval(workoutTimer);
+                workoutTimer = null;
+            }
+            if (heartRateTimer) {
+                clearInterval(heartRateTimer);
+                heartRateTimer = null;
+            }
+            if (stepCountTimer) {
+                clearInterval(stepCountTimer);
+                stepCountTimer = null;
+            }
+        }
+
+        // 更新计时器
+        function updateTimer() {
+            if (!workoutState.isActive || workoutState.isPaused) return;
+
+            workoutState.elapsedTime = Date.now() - workoutState.startTime;
+            const seconds = Math.floor(workoutState.elapsedTime / 1000);
+
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = timeString;
+
+            // 更新进度
+            updateProgress();
+        }
+
+        // 模拟心率更新
+        function updateHeartRate() {
+            if (!workoutState.isActive) return;
+
+            // 模拟心率数据（基于运动类型和时间）
+            const baseHR = getBaseHeartRate();
+            const variation = Math.random() * 10 - 5; // ±5的随机变化
+            workoutState.heartRate = Math.round(baseHR + variation);
+
+            document.getElementById('heartRate').textContent = workoutState.heartRate;
+
+            // 更新心率区间
+            updateHeartRateZone(workoutState.heartRate);
+        }
+
+        // 获取基础心率
+        function getBaseHeartRate() {
+            const age = userData.age || 30;
+            const maxHR = 220 - age;
+
+            const hrZones = {
+                '快走': maxHR * 0.6,
+                '慢跑': maxHR * 0.75,
+                '游泳': maxHR * 0.7,
+                '跳绳': maxHR * 0.8,
+                '徒手深蹲': maxHR * 0.65,
+                '俯卧撑': maxHR * 0.65,
+                '瑜伽': maxHR * 0.5
+            };
+
+            return hrZones[workoutState.workoutType] || maxHR * 0.6;
+        }
+
+        // 更新心率区间
+        function updateHeartRateZone(heartRate) {
+            const age = userData.age || 30;
+            const maxHR = 220 - age;
+
+            let zone = 'zone-fat-burn';
+            let zoneName = '燃脂区间';
+
+            if (heartRate > maxHR * 0.85) {
+                zone = 'zone-peak';
+                zoneName = '无氧区间';
+            } else if (heartRate > maxHR * 0.7) {
+                zone = 'zone-cardio';
+                zoneName = '有氧区间';
+            }
+
+            const zoneElement = document.getElementById('heartRateZone');
+            zoneElement.className = `heart-rate-zone ${zone}`;
+            zoneElement.textContent = zoneName;
+        }
+
+        // 更新步数
+        function updateStepCount() {
+            if (!workoutState.isActive) return;
+
+            // 基于运动类型模拟步数增长
+            const stepsPerSecond = getStepsPerSecond();
+            workoutState.stepCount += stepsPerSecond * 0.5; // 每500ms调用一次
+
+            updateDisplay();
+        }
+
+        // 获取每秒步数
+        function getStepsPerSecond() {
+            const stepsRates = {
+                '快走': 1.5,
+                '慢跑': 2.5,
+                '游泳': 0,
+                '跳绳': 3.0,
+                '徒手深蹲': 0.5,
+                '俯卧撑': 0,
+                '瑜伽': 0.2
+            };
+
+            return stepsRates[workoutState.workoutType] || 1.5;
+        }
+
+        // 计算热量消耗
+        function calculateCalories() {
+            if (!workoutState.elapsedTime) return 0;
+
+            const minutes = workoutState.elapsedTime / (1000 * 60);
+            const weight = userData.weight || 70; // 默认70kg
+
+            // MET值（代谢当量）
+            const metValues = {
+                '快走': 3.5,
+                '慢跑': 7.0,
+                '游泳': 8.0,
+                '跳绳': 10.0,
+                '徒手深蹲': 5.0,
+                '俯卧撑': 6.0,
+                '瑜伽': 2.5
+            };
+
+            const met = metValues[workoutState.workoutType] || 3.5;
+
+            // 热量计算公式: MET × 体重(kg) × 时间(小时)
+            const calories = met * weight * (minutes / 60);
+            return Math.round(calories);
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            document.getElementById('stepCount').textContent = Math.round(workoutState.stepCount);
+
+            workoutState.caloriesBurned = calculateCalories();
+            document.getElementById('caloriesBurned').textContent = workoutState.caloriesBurned;
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const timeProgress = Math.min((workoutState.elapsedTime / 1000) / workoutState.targetDuration * 100, 100);
+            const calorieProgress = Math.min(workoutState.caloriesBurned / workoutState.targetCalories * 100, 100);
+
+            document.getElementById('timeProgress').style.width = timeProgress + '%';
+            document.getElementById('timeProgressText').textContent = Math.round(timeProgress) + '%';
+
+            document.getElementById('calorieProgress').style.width = calorieProgress + '%';
+            document.getElementById('calorieProgressText').textContent = Math.round(calorieProgress) + '%';
+        }
+
+        // 更新传感器状态
+        function updateSensorStatus(connected, message) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+
+            if (connected) {
+                indicator.className = 'status-indicator status-connected';
+                statusText.textContent = message;
+            } else {
+                indicator.className = 'status-indicator status-disconnected';
+                statusText.textContent = message;
+            }
+        }
+
+        // 启动传感器模拟（用于演示）
+        function startSensorSimulation() {
+            updateSensorStatus(true, '模拟传感器已连接');
+        }
+
+        // 显示运动总结
+        function showWorkoutSummary() {
+            const duration = Math.floor(workoutState.elapsedTime / 1000);
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+
+            const summary = `运动总结：
+时长：${minutes}分${seconds}秒
+步数：${Math.round(workoutState.stepCount)}步
+热量：${workoutState.caloriesBurned}卡路里
+平均心率：${workoutState.heartRate}BPM`;
+
+            alert(summary);
+        }
+
+        // 保存运动记录
+        function saveWorkout() {
+            const workoutRecord = {
+                date: new Date().toISOString(),
+                type: workoutState.workoutType,
+                duration: workoutState.elapsedTime,
+                steps: Math.round(workoutState.stepCount),
+                calories: workoutState.caloriesBurned,
+                avgHeartRate: workoutState.heartRate
+            };
+
+            // 获取现有记录
+            const workoutHistory = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+            workoutHistory.push(workoutRecord);
+
+            // 保存到本地存储
+            localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
+
+            alert('运动记录已保存！');
+
+            // 返回运动推荐页面
+            window.location.href = 'exercise.html';
+        }
+
+        // 返回上一页
+        function goBack() {
+            if (workoutState.isActive) {
+                const confirm = window.confirm('运动正在进行中，确定要退出吗？');
+                if (!confirm) return;
+            }
+
+            window.location.href = 'exercise.html';
+        }
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', function() {
+            stopTimers();
+        });
+    </script>
+</body>
+</html>
