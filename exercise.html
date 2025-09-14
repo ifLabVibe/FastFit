@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运动推荐 - 个性化减肥计划</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+
+        .user-info {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .user-info h2 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .daily-intake {
+            background: linear-gradient(135deg, #2ECC71, #27ae60);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .daily-intake h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .daily-intake .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .recommendations {
+            margin-bottom: 30px;
+        }
+
+        .recommendations h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .exercise-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 5px solid #2ECC71;
+        }
+
+        .exercise-card h3 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exercise-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2ECC71;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .exercise-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2ECC71;
+        }
+
+        .exercise-description {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .exercise-benefits {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .benefits-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .benefits-list {
+            font-size: 14px;
+            color: #666;
+            list-style: none;
+        }
+
+        .benefits-list li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .benefits-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2ECC71;
+            font-weight: bold;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2ECC71;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .progress-section h3 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ECC71;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .info-grid,
+            .exercise-details {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>你的专属运动计划</h1>
+            <p>基于你的身体状况量身定制</p>
+        </div>
+
+        <!-- 用户基本信息 -->
+        <div class="user-info">
+            <h2>个人信息概览</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">性别</div>
+                    <div class="info-value" id="userGender">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">年龄</div>
+                    <div class="info-value" id="userAge">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">当前体重</div>
+                    <div class="info-value" id="userWeight">- kg</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">目标体重</div>
+                    <div class="info-value" id="userTarget">- kg</div>
+                </div>
+            </div>
+            <div class="daily-intake">
+                <h3>每日推荐热量摄入</h3>
+                <div class="value" id="dailyIntake">- kcal</div>
+            </div>
+        </div>
+
+        <!-- 运动推荐 -->
+        <div class="recommendations">
+            <h2>为你推荐的运动</h2>
+            <div id="exerciseList"></div>
+        </div>
+
+        <!-- 预期效果 -->
+        <div class="progress-section">
+            <h3>预期减肥效果</h3>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="targetWeeks">-</div>
+                    <div class="stat-label">目标周数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="weightLoss">-</div>
+                    <div class="stat-label">减重目标 (kg)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="weeklyLoss">-</div>
+                    <div class="stat-label">每周减重 (kg)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="goBack()">返回修改信息</button>
+            <button class="btn btn-primary" onclick="startPlan()">开始我的计划</button>
+        </div>
+    </div>
+
+    <script>
+        // 运动数据库
+        const exerciseDatabase = {
+            cardio: [
+                {
+                    name: "快走",
+                    icon: "🚶",
+                    duration: 30,
+                    frequency: "每天",
+                    calories: 150,
+                    difficulty: "beginner",
+                    description: "快走是最适合初学者的有氧运动，对关节负担小，容易坚持。建议保持步频在每分钟120步左右。",
+                    benefits: ["改善心肺功能", "燃烧脂肪", "增强腿部肌肉", "低运动损伤风险"]
+                },
+                {
+                    name: "慢跑",
+                    icon: "🏃",
+                    duration: 25,
+                    frequency: "隔天",
+                    calories: 250,
+                    difficulty: "intermediate",
+                    description: "慢跑是经典的减脂运动，能有效提高心率，加速新陈代谢。建议心率保持在最大心率的70%左右。",
+                    benefits: ["高效燃脂", "增强心肺耐力", "释放压力", "改善睡眠质量"]
+                },
+                {
+                    name: "游泳",
+                    icon: "🏊",
+                    duration: 40,
+                    frequency: "每周3次",
+                    calories: 300,
+                    difficulty: "intermediate",
+                    description: "游泳是全身性有氧运动，对关节零冲击，特别适合体重较重或有关节问题的人群。",
+                    benefits: ["全身减脂", "塑造体型", "保护关节", "提升肺活量"]
+                },
+                {
+                    name: "跳绳",
+                    icon: "🤸",
+                    duration: 15,
+                    frequency: "每天",
+                    calories: 200,
+                    difficulty: "intermediate",
+                    description: "跳绳是高效的燃脂运动，短时间内消耗大量热量，同时锻炼协调性和敏捷性。",
+                    benefits: ["快速燃脂", "提高协调性", "增强心肺功能", "方便实施"]
+                }
+            ],
+            strength: [
+                {
+                    name: "徒手深蹲",
+                    icon: "🏋️",
+                    duration: 15,
+                    frequency: "隔天",
+                    calories: 80,
+                    difficulty: "beginner",
+                    description: "深蹲是力量训练的基础动作，主要锻炼下肢肌群，提高基础代谢率，塑造腿部和臀部线条。",
+                    benefits: ["增强腿部力量", "提升基础代谢", "改善体态", "无需器械"]
+                },
+                {
+                    name: "俯卧撑",
+                    icon: "💪",
+                    duration: 12,
+                    frequency: "隔天",
+                    calories: 70,
+                    difficulty: "intermediate",
+                    description: "俯卧撑是经典的上肢力量训练，锻炼胸肌、肩膀和手臂，增加肌肉量有助于提高基础代谢。",
+                    benefits: ["增强上肢力量", "塑造胸肌线条", "提高核心稳定", "随时随地可做"]
+                }
+            ],
+            flexibility: [
+                {
+                    name: "瑜伽",
+                    icon: "🧘",
+                    duration: 30,
+                    frequency: "每天",
+                    calories: 120,
+                    difficulty: "beginner",
+                    description: "瑜伽结合了柔韧性、力量和冥想，有助于减压放松，改善身体柔韧性和平衡感。",
+                    benefits: ["提高柔韧性", "减压放松", "改善体态", "增强专注力"]
+                }
+            ]
+        };
+
+        // 页面加载时获取用户数据并生成推荐
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+            if (Object.keys(userData).length === 0) {
+                alert('未找到用户数据，请重新填写信息');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            displayUserInfo(userData);
+            generateExerciseRecommendations(userData);
+        });
+
+        // 显示用户基本信息
+        function displayUserInfo(userData) {
+            document.getElementById('userGender').textContent = userData.gender === 'male' ? '男' : '女';
+            document.getElementById('userAge').textContent = userData.age + ' 岁';
+            document.getElementById('userWeight').textContent = userData.weight + ' kg';
+            document.getElementById('userTarget').textContent = userData.targetWeight + ' kg';
+            document.getElementById('dailyIntake').textContent = userData.dailyIntake + ' kcal';
+
+            // 显示预期效果
+            const weightLoss = (userData.weight - userData.targetWeight).toFixed(1);
+            const weeklyLoss = (weightLoss / userData.targetWeeks).toFixed(2);
+
+            document.getElementById('targetWeeks').textContent = userData.targetWeeks + ' 周';
+            document.getElementById('weightLoss').textContent = weightLoss + ' kg';
+            document.getElementById('weeklyLoss').textContent = weeklyLoss + ' kg';
+        }
+
+        // 生成运动推荐
+        function generateExerciseRecommendations(userData) {
+            const recommendations = [];
+
+            // 根据活动水平推荐运动
+            if (userData.activityLevel === 'sedentary') {
+                // 久坐人群：从简单有氧开始
+                recommendations.push(exerciseDatabase.cardio[0]); // 快走
+                recommendations.push(exerciseDatabase.strength[0]); // 深蹲
+                recommendations.push(exerciseDatabase.flexibility[0]); // 瑜伽
+            } else if (userData.activityLevel === 'light') {
+                // 轻度活动：增加运动强度
+                recommendations.push(exerciseDatabase.cardio[1]); // 慢跑
+                recommendations.push(exerciseDatabase.strength[0]); // 深蹲
+                recommendations.push(exerciseDatabase.cardio[3]); // 跳绳
+            } else if (userData.activityLevel === 'moderate') {
+                // 中度活动：平衡有氧和力量训练
+                recommendations.push(exerciseDatabase.cardio[1]); // 慢跑
+                recommendations.push(exerciseDatabase.cardio[2]); // 游泳
+                recommendations.push(exerciseDatabase.strength[1]); // 俯卧撑
+            } else {
+                // 高强度活动：全面训练
+                recommendations.push(exerciseDatabase.cardio[2]); // 游泳
+                recommendations.push(exerciseDatabase.cardio[3]); // 跳绳
+                recommendations.push(exerciseDatabase.strength[1]); // 俯卧撑
+            }
+
+            // 根据年龄调整
+            if (userData.age > 45) {
+                // 年龄较大，优先推荐低冲击运动
+                recommendations.unshift(exerciseDatabase.flexibility[0]); // 瑜伽
+                if (recommendations.find(ex => ex.name === '慢跑')) {
+                    const jogIndex = recommendations.findIndex(ex => ex.name === '慢跑');
+                    recommendations[jogIndex] = exerciseDatabase.cardio[0]; // 替换为快走
+                }
+            }
+
+            // 根据BMI调整
+            const height = userData.height / 100;
+            const bmi = userData.weight / (height * height);
+
+            if (bmi > 30) {
+                // 肥胖人群，优先低冲击运动
+                recommendations.unshift(exerciseDatabase.cardio[2]); // 游泳
+            }
+
+            // 去重并限制推荐数量
+            const uniqueRecommendations = recommendations.filter((ex, index, self) =>
+                index === self.findIndex(e => e.name === ex.name)
+            ).slice(0, 3);
+
+            displayExerciseRecommendations(uniqueRecommendations);
+        }
+
+        // 显示运动推荐
+        function displayExerciseRecommendations(recommendations) {
+            const container = document.getElementById('exerciseList');
+            container.innerHTML = '';
+
+            recommendations.forEach((exercise, index) => {
+                const exerciseCard = document.createElement('div');
+                exerciseCard.className = 'exercise-card';
+                exerciseCard.innerHTML = `
+                    <h3>
+                        <span class="exercise-icon">${exercise.icon}</span>
+                        ${exercise.name}
+                        <span class="difficulty-badge difficulty-${exercise.difficulty}">
+                            ${getDifficultyText(exercise.difficulty)}
+                        </span>
+                    </h3>
+                    <div class="exercise-details">
+                        <div class="detail-item">
+                            <div class="detail-label">建议时长</div>
+                            <div class="detail-value">${exercise.duration} 分钟</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">运动频率</div>
+                            <div class="detail-value">${exercise.frequency}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">消耗热量</div>
+                            <div class="detail-value">${exercise.calories} kcal</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">优先级</div>
+                            <div class="detail-value">${index === 0 ? '最高' : index === 1 ? '中等' : '一般'}</div>
+                        </div>
+                    </div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-benefits">
+                        <div class="benefits-title">主要功效</div>
+                        <ul class="benefits-list">
+                            ${exercise.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                container.appendChild(exerciseCard);
+            });
+        }
+
+        // 获取难度文本
+        function getDifficultyText(difficulty) {
+            const difficultyMap = {
+                'beginner': '初级',
+                'intermediate': '中级',
+                'advanced': '高级'
+            };
+            return difficultyMap[difficulty] || '未知';
+        }
+
+        // 返回修改信息
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // 开始计划（这里应该跳转到今日卡片页面）
+        function startPlan() {
+            alert('恭喜！你的减肥计划已制定完成。\n\n从明天开始，你将每天7:30收到个性化的任务卡片，只需要完成一个简单的小目标。\n\n坚持就是胜利！');
+
+            // 实际应用中这里应该跳转到今日卡片页面
+            // window.location.href = 'today.html';
+
+            // 暂时返回首页
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
